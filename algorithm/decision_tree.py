@@ -139,7 +139,7 @@ class Evaluate:
         self.tree = decision_tree
         self.output_size = output_size
 
-    def asess(self):
+    def assess(self):
 
         start = time.time()
         test_cases = (np.random.rand(self.output_size) * 2) - 1
@@ -162,7 +162,7 @@ class Evaluate:
 if __name__ == '__main__':
 
     tree = Decision_Tree(depth=10, min_leaf_size=10)
-    Evaluate(tree).asess()
+    Evaluate(tree).assess()
 
 
 

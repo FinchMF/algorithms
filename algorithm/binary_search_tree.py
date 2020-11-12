@@ -45,7 +45,7 @@ class Binary_Search_Tree:
 
     def __init__(self):
 
-        self.root
+        self.root = None
 
     def empty(self):
 
@@ -105,7 +105,7 @@ class Binary_Search_Tree:
                     
                     self.__reassign_nodes(node, node.get_right())
 
-                elif (node.get_right() is not None and node.get_right() is None):
+                elif (node.get_left() is not None and node.get_right() is None):
 
                     self.__reassign_nodes(node, node.get_left())
 
@@ -125,7 +125,7 @@ class Binary_Search_Tree:
 
             while curr_node is not None and curr_node.get_label() is not label:
 
-                if label < curr_node.get_left():
+                if label < curr_node.get_label():
 
                     curr_node = curr_node.get_left()
 
@@ -147,6 +147,8 @@ class Binary_Search_Tree:
             curr_node = self.get_root()
 
         if (not self.empty()):
+
+            curr_node = self.get_root()
 
             while (curr_node.get_right() is not None):
 
@@ -237,5 +239,78 @@ class Binary_Search_Tree:
 
     
 
+def In_Pre_Order(curr_node):
 
+    node_list = []
+
+    if curr_node is not None:
+
+        node_list += In_Pre_Order(curr_node.get_left())
+        node_list.insert(0, curr_node.get_label())
+        node_list += In_Pre_Order(curr_node.get_right())
+
+    return node_list
+
+
+def testBinarySearchTree():
+    r'''
+    Example
+                  8
+                 / \
+                3   10
+               / \    \
+              1   6    14
+                 / \   /
+                4   7 13
+    '''
+
+    r'''
+    Example After Deletion
+                  7
+                 / \
+                1   4
+
+    '''
+    t = Binary_Search_Tree()
+    t.insert(8)
+    t.insert(3)
+    t.insert(6)
+    t.insert(1)
+    t.insert(10)
+    t.insert(14)
+    t.insert(13)
+    t.insert(4)
+    t.insert(7)
+
+  
+    print(t.__str__())
+
+    if(t.get_node(6) is not None):
+        print("The label 6 exists")
+    else:
+        print("The label 6 doesn't exist")
+
+    if(t.get_node(-1) is not None):
+        print("The label -1 exists")
+    else:
+        print("The label -1 doesn't exist")
+
+    if(not t.empty()):
+        print(("Max Value: ", t.get_max().get_label()))
+        print(("Min Value: ", t.get_min().get_label()))
+
+    t.delete(13)
+    t.delete(10)
+    t.delete(8)
+    t.delete(3)
+    t.delete(6)
+    t.delete(14)
+
+
+    list = t.traversal_tree(In_Pre_Order, t.root)
+    for x in list:
+        print(x)
+
+if __name__ == "__main__":
+    testBinarySearchTree()
 

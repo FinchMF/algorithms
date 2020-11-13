@@ -1,1 +1,1 @@
-# suduko_algorithims
+# sudoku_algorithims

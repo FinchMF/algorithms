@@ -96,7 +96,7 @@ class Binary_Search_Tree:
 
             if (node is not None):
 
-                if (node.get_left is None and node.get_right() is None):
+                if (node.get_left() is None and node.get_right() is None):
 
                     self.__reassign_nodes(node, None)
                     node = None
@@ -140,15 +140,13 @@ class Binary_Search_Tree:
 
         if (root is not None):
 
-            curr_root = root
+            curr_node = root
 
         else:
 
             curr_node = self.get_root()
 
         if (not self.empty()):
-
-            curr_node = self.get_root()
 
             while (curr_node.get_right() is not None):
 
@@ -189,8 +187,8 @@ class Binary_Search_Tree:
         if curr_node is not None:
 
             node_list.insert(0, curr_node)
-            node_list = node_list + self.__In_Order_Traversal(curr_node.get_left())
-            node_list = node_list + self.__In_Order_Traversal(curr_node.get_right())
+            node_list += self.__In_Order_Traversal(curr_node.get_left())
+            node_list += self.__In_Order_Traversal(curr_node.get_right())
 
         return node_list
 
@@ -282,7 +280,7 @@ def testBinarySearchTree():
     t.insert(4)
     t.insert(7)
 
-  
+    #Prints all the elements of the list in order traversal
     print(t.__str__())
 
     if(t.get_node(6) is not None):
@@ -306,11 +304,14 @@ def testBinarySearchTree():
     t.delete(6)
     t.delete(14)
 
-
+    #Gets all the elements of the tree In pre order
+    #And it prints them
     list = t.traversal_tree(In_Pre_Order, t.root)
     for x in list:
         print(x)
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
+
     testBinarySearchTree()
 

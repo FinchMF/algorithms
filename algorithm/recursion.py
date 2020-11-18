@@ -11,7 +11,7 @@ def factorial(n):
     else: 
         return n * factorial(n-1)
 
-# ---- ENGLISH RULLER CODE -----
+# ---- ENGLISH RULER CODE -----
 
 def draw_line(tick_length, tick_label=' '):
 

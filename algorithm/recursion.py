@@ -82,6 +82,30 @@ def disk_usage(path):
     return total
 
 
+
+# ---- FIBONAOCCI ----
+
+def fibonacci_number(n):
+
+    if n <= 1:
+
+        return (n,0)
+
+    else:
+
+        (a,b) = fibonacci_number(n-1)
+        return (a+b, a)
+
+def fibonacci(n):
+
+    if n <=1:
+
+        return n
+    else:
+
+        return (fibonacci(n - 1) + fibonacci(n - 2))
+
+
 if __name__ == '__main__':
 
     print('---- FACTORIAL EXMAPLE -----')
@@ -121,5 +145,17 @@ if __name__ == '__main__':
 
     path = '/Users/finchmf/coding/data_structures_and_algorhitms'
     print(f'Total disk usage: {disk_usage(path)}')
+    print('\n')
+
+
+    print('---- FIBONACCI ----')
+    n = 15
+
+    res = fibonacci_number(n)
+    print(f'The {n}th and {n-1}th Fibonacci numbers are: {res}')
+    print('\n')
+    print('Fibonacci Sequence:\n')
+    for i in range(n+1):
+       print(fibonacci(i))
 
 

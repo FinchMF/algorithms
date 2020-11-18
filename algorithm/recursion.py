@@ -1,4 +1,6 @@
 
+import os
+
 # ---- FACTORIAL EXAMPLE ----
 
 def factorial(n):
@@ -51,7 +53,6 @@ def binary_search(data, target, low, high):
         mid = (high + low) // 2
 
         if data[mid] == target:
-
             return mid
 
         elif data[mid] > target:
@@ -63,10 +64,22 @@ def binary_search(data, target, low, high):
             return binary_search(data, target, mid + 1, high)
 
     else: 
-
         return -1
    
+# ---- FILE SYSTEM ----
 
+def disk_usage(path):
+
+    total = os.path.getsize(path)
+
+    if os.path.isdir(path):
+
+        for fname in os.listdir(path):
+            childpath = os.path.join(path, fname)
+            total += disk_usage(childpath)
+
+    print(f'{total:<7}{path}')
+    return total
 
 
 if __name__ == '__main__':
@@ -81,10 +94,10 @@ if __name__ == '__main__':
     num_inches, major_length = [1,2,4], [2,3,4]
     for n in num_inches:
         for ml in major_length:
+            print('\n')
+            print(f' ------------ Inches: {n} with Major Length: {ml} ')
+            print('\n')
             draw_ruler(n, ml)
-            print('\n')
-            print(' ------------ ')
-            print('\n')
 
     print('---- BINARY SEARCH ----')
     data = [2,3,5,6,7,10,55,56,88,100,155,167,200]
@@ -103,5 +116,10 @@ if __name__ == '__main__':
         print('Element is not present in data')
 
     print('\n')
+
+    print('---- FILE SYSTEM DISK USAGE ----')
+
+    path = '/Users/finchmf/coding/data_structures_and_algorhitms'
+    print(f'Total disk usage: {disk_usage(path)}')
 
 

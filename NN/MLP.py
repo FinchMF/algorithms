@@ -231,7 +231,7 @@ class MLP:
 
     def predict(self, X_test, weights):
 
-        preds = forward(X=np.transpose(X_test),
+        preds, _ = forward(X=np.transpose(X_test),
                         params=weights,
                         network=self.network)
 

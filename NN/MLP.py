@@ -3,7 +3,7 @@ import sys
 import numpy as np
 from NN.utils import relu, relu_derivative, sigmoid, sigmoid_derivative
 
-NN_arch = [
+network = [
 
     {'input_dim': 2, 'output_dim': 25, 'activation': 'relu'},
     {'input_dim': 25, 'output_dim': 50, 'activation': 'relu'},
@@ -13,24 +13,24 @@ NN_arch = [
 
 ]
 
-def init_layers(NN_arch, seed=99):
+def init_layers(network, seed=99):
 
     np.random.seed(seed)
 
-    num_layers = len(NN_arch)
-    params_values = {}
+    num_layers = len(network)
+    params = {}
 
-    for idx, layer in enumerate(NN_arch):
+    for idx, layer in enumerate(network):
 
         layer_idx = idx + 1
 
         layer_input_size = layer['input_dim']
         layer_output_size = layer['output_dim']
 
-        params_values[f'W{layer_idx}'] = np.random.randn(layer_output_size, layer_input_size) * 0.1
-        params_values[f'b{layer_idx}'] = np.random.randn(layer_output_size, 1) * 0.1
+        params[f'W{layer_idx}'] = np.random.randn(layer_output_size, layer_input_size) * 0.1
+        params[f'b{layer_idx}'] = np.random.randn(layer_output_size, 1) * 0.1
 
-    return params_values
+    return params
 
 
 def single_layer_forward(A_prev, W_curr, b_curr, activation='relu'):
@@ -53,21 +53,21 @@ def single_layer_forward(A_prev, W_curr, b_curr, activation='relu'):
     return activation_func(Z_curr), Z_curr
 
 
-def forward(X, params_values, NN_arch):
+def forward(X, params, network):
 
     memory = {}
 
     A_curr = X
 
-    for idx, layer in enumerate(NN_arch):
+    for idx, layer in enumerate(network):
 
         layer_idx = idx + 1
 
         A_prev = A_curr
 
         activation_curr = layer['activation']
-        W_curr = params_values[f'W{layer_idx}']
-        b_curr = params_values[f'b{layer_idx}']
+        W_curr = params[f'W{layer_idx}']
+        b_curr = params[f'b{layer_idx}']
         A_curr, Z_curr = single_layer_forward(A_prev, W_curr, b_curr, activation_curr)
 
         memory[f'A{idx}'] = A_prev
@@ -126,9 +126,9 @@ def single_layer_backward(dA_curr, W_curr, b_curr, Z_curr, A_prev, activation='r
     return dA_prev, dW_curr, db_curr
 
 
-def backward(y_hat, y, memory, params_values, NN_arch):
+def backward(y_hat, y, memory, params, network):
 
-    grads_values = {}
+    grads = {}
 
     m = y.shape[1]
 
@@ -136,7 +136,7 @@ def backward(y_hat, y, memory, params_values, NN_arch):
 
     dA_prev = -(np.divide(y, y_hat) - np.divide(1 - y, 1 - y_hat))
 
-    for layer_idx_prev, layer in reversed(list(enumerate(NN_arch))):
+    for layer_idx_prev, layer in reversed(list(enumerate(network))):
 
         layer_idx_curr = layer_idx_prev + 1
 
@@ -147,30 +147,30 @@ def backward(y_hat, y, memory, params_values, NN_arch):
         A_prev = memory[f'A{layer_idx_prev}']
         Z_curr = memory[f'Z{layer_idx_curr}']
 
-        W_curr = params_values[f'W{layer_idx_curr}']
-        b_curr = params_values[f'b{layer_idx_curr}']
+        W_curr = params[f'W{layer_idx_curr}']
+        b_curr = params[f'b{layer_idx_curr}']
 
         dA_prev, dW_curr, db_curr = single_layer_backward(dA_curr, W_curr, b_curr, Z_curr, A_prev, activation_func_curr)
 
-        grads_values[f'dW{layer_idx_curr}'] = dW_curr
-        grads_values[f'db{layer_idx_curr}'] = db_curr
+        grads[f'dW{layer_idx_curr}'] = dW_curr
+        grads[f'db{layer_idx_curr}'] = db_curr
 
-    return grads_values
-
-
-def optimize(params_values, grads_values, NN_arch, learning_rate):
-
-    for layer_idx, layer in enumerate(NN_arch, 1):
-
-        params_values[f'W{layer_idx}'] -= learning_rate * grads_values[f'dW{layer_idx}']
-        params_values[f'b{layer_idx}'] -= learning_rate * grads_values[f'db{layer_idx}']
-
-    return params_values
+    return grads
 
 
-def train(X, y, NN_arch, epochs, learning_rate, verbose=False, callbacks=None):
+def optimize(params, grads, network, learning_rate):
 
-    params_values = init_layers(NN_arch, 2)
+    for layer_idx, layer in enumerate(network, 1):
+
+        params[f'W{layer_idx}'] -= learning_rate * grads[f'dW{layer_idx}']
+        params[f'b{layer_idx}'] -= learning_rate * grads[f'db{layer_idx}']
+
+    return params
+
+
+def train(X, y, network, epochs, learning_rate, verbose=False, callbacks=None):
+
+    params = init_layers(network, 2)
 
     losses = []
     acc = []
@@ -180,7 +180,7 @@ def train(X, y, NN_arch, epochs, learning_rate, verbose=False, callbacks=None):
 
         x += 1
         z = (f'[i] {round((x/epochs)*100, 2)}% Training Complete')
-        y_hat, state = forward(X, params_values, NN_arch)
+        y_hat, state = forward(X, params, network)
 
         loss = calculate_loss(y_hat, y)
         losses.append(loss)
@@ -188,8 +188,8 @@ def train(X, y, NN_arch, epochs, learning_rate, verbose=False, callbacks=None):
         accuracy = calculate_accuracy(y_hat, y)
         acc.append(accuracy)
 
-        grads_values = backward(y_hat, y, state, params_values, NN_arch)
-        params_values = optimize(params_values, grads_values, NN_arch, learning_rate)
+        grads = backward(y_hat, y, state, params, network)
+        params = optimize(params, grads, network, learning_rate)
 
         if verbose is not True:
 
@@ -202,11 +202,48 @@ def train(X, y, NN_arch, epochs, learning_rate, verbose=False, callbacks=None):
                 print(f'Epoch {e}/{epochs} - loss: {loss} - acc: {accuracy}')
             if callbacks is not None:
 
-                callbacks(e, params_values)
+                callbacks(e, params)
 
 
-    return params_values
+    return params
 
 
 
 
+class MLP:
+
+    def __init__(self, network):
+
+        self.network = network
+
+    def train(self, X_train, y_train, epochs, learning_rate, verbose=False, callbacks=None):
+
+        weights = train(X=np.transpose(X_train),
+                       y=np.transpose(y_train.reshape((y_train.shape[0], 1))),
+                       network=self.network,
+                       epochs=epochs,
+                       learning_rate=learning_rate,
+                       verbose=verbose,
+                       callbacks=callbacks)
+
+        return weights
+
+
+    def predict(self, X_test, weights):
+
+        preds = forward(X=np.transpose(X_test),
+                        params=weights,
+                        network=self.network)
+
+        return preds
+
+
+
+    def network_accuracy(self, preds, y_test):
+
+        acc = calculate_accuracy(y_hat=preds,
+                                 y=np.transpose(y_test.reshape((y_test.shape[0], 1))))
+
+        print(f'Network on Accuracy: {acc}')
+
+        return acc

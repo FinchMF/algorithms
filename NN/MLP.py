@@ -1,7 +1,7 @@
 
 import sys
 import numpy as np
-from NN.utils import relu, relu_derivative, sigmoid, sigmoid_derivative
+from NN.utils import relu, relu_derivative, sigmoid, sigmoid_derivative, softmax, softmax_derivative
 
 network = [
 
@@ -46,6 +46,10 @@ def single_layer_forward(A_prev, W_curr, b_curr, activation='relu'):
 
         activation_func = sigmoid
 
+    elif activation is 'softmax':
+
+        activation_func = softmax
+
     else:
 
         raise Exception('[i] Activation Not Supported')
@@ -84,8 +88,9 @@ def calculate_loss(y_hat, y):
 
     return np.squeeze(loss)
 
+
 def calculate_cross_entropy_loss(y_hat, y):
-    
+
     loss = 0.0 
     
     for true, pred in zip(y, y_hat):
@@ -120,6 +125,10 @@ def single_layer_backward(dA_curr, W_curr, b_curr, Z_curr, A_prev, activation='r
     elif activation is 'sigmoid':
 
         backward_activation_func = sigmoid_derivative
+
+    elif activation is 'softmax':
+
+        backward_activation_func = softmax_derivative
 
     else:
 
@@ -177,7 +186,7 @@ def optimize(params, grads, network, learning_rate):
     return params
 
 
-def train(X, y, network, epochs, learning_rate, verbose=False, callbacks=None):
+def train(X, y, network, epochs, learning_rate, classification='binary', verbose=False, callbacks=None):
 
     params = init_layers(network, 2)
 
@@ -191,8 +200,17 @@ def train(X, y, network, epochs, learning_rate, verbose=False, callbacks=None):
         z = (f'[i] {round((x/epochs)*100, 2)}% Training Complete')
         y_hat, state = forward(X, params, network)
 
-        loss = calculate_loss(y_hat, y)
+        if classification == 'binary':
+            loss = calculate_loss(y_hat, y)
+        
+        elif classification == 'multi':
+            loss = calculate_cross_entropy_loss(y_hat, y)
+
+        else:
+            raise Exception(f'[i] Classificaiton Type: {classification} Not Supported. Please choose between - binary - or - multi -')
+
         losses.append(loss)
+        
 
         accuracy = calculate_accuracy(y_hat, y)
         acc.append(accuracy)
@@ -225,13 +243,14 @@ class MLP:
 
         self.network = network
 
-    def train(self, X_train, y_train, epochs, learning_rate, verbose=False, callbacks=None):
+    def train(self, X_train, y_train, epochs, learning_rate, classification='binary', verbose=False, callbacks=None):
 
         weights = train(X=np.transpose(X_train),
                        y=np.transpose(y_train.reshape((y_train.shape[0], 1))),
                        network=self.network,
                        epochs=epochs,
                        learning_rate=learning_rate,
+                       classification=classification,
                        verbose=verbose,
                        callbacks=callbacks)
 

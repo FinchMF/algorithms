@@ -84,6 +84,15 @@ def calculate_loss(y_hat, y):
 
     return np.squeeze(loss)
 
+def calculate_cross_entropy_loss(y_hat, y):
+    
+    loss = 0.0 
+    
+    for true, pred in zip(y, y_hat):
+        loss += np.log(pred[true-1])
+
+    return  -1 * loss / len(y)
+
 
 def convert_prob_to_class(probs):
 
